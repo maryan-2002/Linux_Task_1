@@ -1,0 +1,46 @@
+initially, I cloed a disk and created new physical disk named sdb to start
+
+1. Create a volume group, and set 16M as extends.
+
+fisrt I created a physical resource by fdisk to create a partion sdb1
+
+$ fdisk /dev/sdb
+
+>n #new partion
+>p #partion type choesd primary by default just enter
+>1 #partion number 1 by default the first partioned to be created 
+>2048 #first sector to start chosed default
+>20971519 #second sector end with chosed by default
+
+>t #(change partion type) 
+>8e #linux LVM
+
+>w #save 
+>q #exit
+
+create physical volumn
+
+$ pvcreate /dev/sdb1
+
+crete volume group set to 16 M
+
+$ vgcreate -s 16M VG /dev/sdb1
+$ vgdisplay
+
+2. And divided a volume group containing 50 extends on
+volume group lv,
+
+$ lvcreate -l 50 -n VL VG
+
+3. make it as ext4 file system,
+
+mkfs -t ext4 /dev/VG/VL
+ 
+4. and mounted automatically under /mnt/data
+
+$ nano /etc/fstam
+
+>/dev/VG/VL /mnt/mydata ext4 defaults 1 2
+>^s ^x
+
+mount -a
