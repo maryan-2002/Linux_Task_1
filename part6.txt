@@ -1,0 +1,42 @@
+Part 6: bash script and processes
+Write a shell script that will keep running for 10 mins in the background and check the process that it's created and try to kill using commands.
+
+create a file .sh to identify a bash script
+and modify the file permissions to allow wxwcution of the script
+adding execution access to user u+x
+write the commands
+
+printing that it will wait for 10 min
+take the background process id and put it in variable pid
+kill the process
+wait for the killing process to be done
+if does not kill it will print 
+ 
+
+
+#touch part6_task1.sh
+#chmod u+x part6_task1.sh
+# nano part6_task1.sh
+
+...
+
+#! /usr/bin/bash
+echo "Hello World"
+echo "waiting 10 min"
+
+pid=$?
+sleep 600
+echo $pid
+kill $pid
+wait $pid
+echo "process not killed"
+
+...
+
+# ./part6_task1.sh
+>> output
+Hello World
+waiting 10 min
+0
+Terminated
+

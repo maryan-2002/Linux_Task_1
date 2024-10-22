@@ -1,0 +1,88 @@
+Part 7: Yum Repo
+
+1- Install tmux on your machine
+
+# yum update
+# yum install -y tmux
+# tmux -V
+>> tmux 3.2a
+
+tmux > to start a session
+tmux new -s session_name > to specify a name
+	exit > to exit a window
+	ctrl b + c> to create a new window
+	ctrl b + n> to switch to the next window
+	ctrl b + p> to switch to the previous window
+	ctrl b + #> speify a certin window keep in mind it start from 0
+	ctrl b + ,> to rename a window
+	ctrl b + d> detach a window
+tmux a > to reattach a window or if there more than one the last one
+tmux ls > to list all sessions
+tmux a -t session_name > reattach to specific session 
+	ctrl b + s> switch between sessions
+	ctrl b + ?> display help message
+man tmux
+tmux kill-session -t session_name > to kill a specific session
+tmux kell-server > to kill all sessions
+
+2- Install apache server on your machine(httpd)
+
+#yum install httpd -y
+#systemctl start httpd
+#systemctl status httpd
+#systemctl enable httpd
+
+inside /var/www/html
+#vi index.html
+>hello from maryan html
+#chown apache:apache index.html
+
+2- and Install mysql.
+
+add mysql repository, manditory for centos 9 because it does not come with default repo
+#wget https://repo.mysql.com/mysql80-community-release-el9-1.noarch.rpm
+
+#dnf localinstall mysql80-community-release-el9-1.noarch.rpm
+
+To Test if it added the reprository successfuly
+#dnf repolist enabled | grep "mysql.*community.*"
+
+install mysql
+#dnf install mysql-community-server --nogpgcheck
+
+#systemctl status mysqld
+#systemctl start mysqld
+#systemctl enable mysqld
+
+finally secure installation
+#mysql_secure_installation
+
+> To provide temprary root password
+
+installed in
+# grep 'temporary password' /var/log/mysqld.log
+save it in 
+cat> temp.txt
+
+>give new passwd
+Maryan1?
+
+Connecting to sql 
+#mysql -u root -p 
+
+>>show databases
+>>create database MyData
+
+
+3- Create a local yum repository on your local machine(available publicly) with the zabbix rpms:
+
+https://repo.zabbix.com/zabbix/4.4/rhel/7/x86_64/
+
+
+
+4- Disable all other repositories and keep only the new repo
+
+
+5- Install zabbix rpms from the new repo (Download zabbix, zabbix-web,php, zabbix-server,
+zabbix-agent rpm’s and their dependencies)
+

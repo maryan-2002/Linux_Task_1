@@ -1,0 +1,23 @@
+Part 5: permissions
+SELinux must be running in the Enforcing mode (permanent even after reboot).
+
+we can display the current SELinux mode by 
+
+#getenforce 
+
+we can change the mode temporary by 
+
+#setenforce 0 >> permissive
+#serenforce 1 >> enforcing 
+
+but to change it parmantly 
+ set the default SELinux mode 
+	with the configuration file that determine
+and we can see it in the followin location
+
+#nano /etc/selinux/config.
+
+> we search for line 
+> SELINUX=enforcing
+
+if its other than enforcing change it to enforcing

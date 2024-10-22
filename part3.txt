@@ -1,0 +1,51 @@
+Part 3: SSH
+Generate SSH key and connect to different VM without password.
+
+SSH Scure Shell Protocol
+open a remote terminal session on server with a secure communication 
+
+to make the connection we need to use the command
+#ssh username@IPaddress -p [if a port other than 22]
+
+but with this configure we need to write the password every time we need to remotely administrat a server
+
+we can make a connection without writting the password eery time and keep the connection secure
+by SSH key pair
+the SSH have 2 files 
+one private Key which it cant be shared with anyone
+the other the public key file can be accessed by everyone
+
+we can do this by 
+
+#ssh-keygen
+> the file location where to save the key (/root/.ssh/[name])
+
+>passphrase (Kept it empty)
+
+then we can see the files in 
+
+#cd ~/.ssh
+#ls -l
+
+register the private ssh key file
+first verifying the ssh authintication agent 
+
+#eval "$(ssh-agent -s)"
+
+now register the private ssh key file
+
+#ssh-add ~/.ssh/name
+
+we can display the public key 
+
+#cat ~/.ssh/name.pub
+
+we copy the output key and configure it to the other server 
+or use the following command
+
+#ssh-copy-id -i name.pub username@IPaddress
+
+now everything is set 
+we can login via ssh without entrting a password
+
+#ssh username@IPaddress

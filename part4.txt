@@ -1,0 +1,32 @@
+Part 4: permissions
+1.Copy /etc/fstab to /var/tmp name admin,
+
+#cp /etc/fstab /var/tmp/admin
+#cat /var/tmp/admin
+
+to make sure it was generated and copied, was successful
+
+
+2.the user1 could read, write and modify it,
+
+#setfacl -m u:user1:rw /var/tmp/admin
+
+3.while user2 can’t do any permission.
+
+# setfacl -m u:user2:--- /var/tmp/admin
+
+the permissions was verified by viewing 
+
+# getfacl /var/tmp/admin
+
+>>output
+# file: var/tmp/admin
+# owner: root
+# group: root
+user::rw-
+user:user1:rw-
+user:user2:---
+group::r--
+mask::rw-
+other::r--
+
