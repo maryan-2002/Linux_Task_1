@@ -1,0 +1,26 @@
+Part 8: Network management
+1- Open port 443 , 80
+
+# Open port 80 (HTTP)
+sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+
+#-A : append 
+#-p : protocol
+#-dport : destinaton port
+#-j : target
+
+# Open port 443 (HTTPS)
+sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+
+
+2- Make the changes permanent
+
+sudo iptables-save | sudo tee /etc/sysconfig/iptables
+
+3- Block ssh connection for your colleague ip to the VM.
+
+sudo iptables -A INPUT -s <someIPtoBlock> -p tcp --dport 22 -j DROP
+#-s : source
+
+Finally tp Verify the rules
+sudo iptables -L -n -v

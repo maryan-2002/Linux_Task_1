@@ -50,10 +50,6 @@ To Test if it added the reprository successfuly
 install mysql
 #dnf install mysql-community-server --nogpgcheck
 
-or mariadb 
-dnf install MariaDB-server MariaDB-client
-will be discussed more in question 10
-
 #systemctl status mysqld
 #systemctl start mysqld
 #systemctl enable mysqld
@@ -79,81 +75,31 @@ Connecting to sql
 
 
 3- Create a local yum repository on your local machine(available publicly) with the zabbix rpms:
+
 https://repo.zabbix.com/zabbix/4.4/rhel/7/x86_64/
 
-step 3
-mkdir -p ~/zabbix_repo
-cd ~/zabbix_repo
-
-#downloading rpm
-wget https://repo.zabbix.com/zabbix/5.0/rhel/9/x86_64/zabbix-agent-5.0.441.el9.x86_64.rpm
- yum install createrepo -y //installing create repo package
-(
+# wget https://repo.zabbix.com/zabbix/5.0/rhel/9/x86_64/zabbi           x-agent-5.0.44-1.el9.x86_64.rpm
 # dnf localinstall zabbix-agent-5.0.44-1.el9.x86_64.rpm
-and did it to (agent,get,js,release, sender)
-)
+or yum local install or rpm -i
 
-createrepo ~/zabbix_repo //create yum repo
-createrepo ~/zabbix_repo // configure the yum repo
->>>
-name=Zabbix Repository
-baseurl=/root/zabbix_repo
-enabled=1
-gpgcheck=0
+and did it to (agent,agent2,get,js,release, sender)
 
-to make sure > yum repolist
 
 4- Disable all other repositories and keep only the new repo
 
+yum repolist all
 yum-config-manager --disable repo_id
+yum update
 
 5- Install zabbix rpms from the new repo (Download zabbix, zabbix-web,php, zabbix-server,
 zabbix-agent rpm’s and their dependencies)
 
 cd /var/www/html/zabbix-rpms
-sudo yum install  zabbix-agent
-sudo systemctl enable zabbix-agent
-sudo systemctl start zabbix-agent
-systemctl status zabbix-agent
+yum install -y zabbix-agent2
+sudo systemctl enable zabbix-agent2.service
+sudo systemctl start zabbix-agent2.service
+systemctl status zabbix-agent2.service
+ firewall-cmd --permanent --add-port=10050/tcp
+firewall-cmd --reload
 
-sudo yum install zabbix-server-mysql zabbix-web-mysql zabbix-agent php
-sudo systemctl status zabbix-server zabbix-agent httpd php-fpm
-sudo systemctl start zabbix-server zabbix-agent httpd php-fpm
-sudo systemctl enable zabbix-server zabbix-agent httpd php-fpm
- http://your_server_ip/zabbix
-
-
-
-
-yum install -y 
-#zabbix-server-mysql 
-#zabbix-web-mysql 
-zabbix-agent 
-php 
-php-mysqlnd
-
-//configure Zabbix server
-nano /etc/zabbix/zabbix_server.conf
-
-//create Zabbix database
-mysql -u root -p
->>
-CREATE DATABASE zabbix character set utf8 collate utf8_bin;
-CREATE USER 'zabbix'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON zabbix.* TO 'zabbix'@'localhost';
-FLUSH PRIVILEGES;
-EXIT;
-
-//Initialize the Database:
-zcat /usr/share/doc/zabbix-server-mysql*/create.sql.gz | mysql -uzabbix -p Zabbix
-
-//Start Zabbix services
-systemctl start zabbix-server zabbix-agent httpd
-systemctl enable zabbix-server zabbix-agent httpd
-
-Configure Firewall:
-sudo firewall-cmd --permanent --add-service=http
-sudo firewall-cmd --permanent --add-port=10051/tcp
-sudo firewall-cmd --reload
-
-//accessing :http://your_server_ip/zabbix
+PHP:

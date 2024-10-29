@@ -1,0 +1,116 @@
+Part 10: Mariadb
+
+part1- install mariadb from the local repo that was created earlier.
+
+vi /etc/yum.repos.d/mariadb.repo   
+dnf install MariaDB-server MariaDB-client 
+yum localinstall boost-program-options-1.75.0-6.el9.x86_64.rpm
+yum install -y socat
+dnf install MariaDB-server MariaDB-client
+
+#found two errors in getting status 
+#looked it up, solved it by:
+#to install MariaDB, have to uninstall MySQL 8 first:
+#dnf remove mysql-community-server
+#dnf install mariadb-server
+
+#second multiple sqls effecting the starting
+# clear all in /var/lib/mysql
+#mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql to initialize database directory.
+# mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql.
+
+part2- open ports in iptables from mariadb.
+
+#mariadb port number 3306 looked it from browser so:
+
+iptables -A INPUT -p tcp --dport 3306 -j ACCEPT
+iptables-save | sudo tee /etc/sysconfig/iptables
+sudo systemctl start mariadb
+sudo systemctl enable mariaDB
+
+to secure mariadb server 
+Start the MariaDB shell:  mysql
+Change the root user's password:  ALTER USER 'root'@'localhost' IDENTIFIED BY 'your_new_password';
+
+#Remove anonymous users:
+#DELETE FROM mysql.user WHERE User='';
+
+#Disallow remote root login
+#DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+
+#Remove the test database:
+#DROP DATABASE IF EXISTS test;
+
+#Reload the privileges to apply the changes:
+#FLUSH PRIVILEGES;
+
+#Exit the MariaDB shell:
+#EXIT;
+
+
+////////////////
+
+part3- create database , user(note: handle permissions).
+
+#Access MariaDB server
+
+#login
+#mysql -u root -p
+
+#Creating a new database and new user with password
+
+mysql -u root -p
+
+CREATE DATABASE studentdb;
+
+CREATE user maryan;
+
+GRANT ALL ON studentdb.* TO maryan@localhost IDENTIFIED BY '1234';
+
+FLUSH PRIVILEGES;
+
+
+exit
+
+/////////////////
+
+
+part4- connect to the database created in step 3 using the new user (with password)
+
+#connect to db 
+mysql -u maryan -p studentdb
+
+
+//////////////
+
+
+Example schema
+Create a MariaDB database called studentdb on rhce1 and add ten records
+
+
+#create table
+
+CREATE TABLE students (
+    SID VARCHAR(10) PRIMARY KEY,
+    FNAME VARCHAR(50),
+    LNAME VARCHAR(50),
+    ENROLLED VARCHAR(50),
+    expected_grad_Y INT
+);
+
+#insert records
+
+INSERT INTO students (student_number, first_name, last_name, program_enrolled, expected_graduation_year) VALUES
+('110-001', 'Allen', 'Brown', 'Mechanical', 2017),
+('110-002', 'David', 'Brown', 'Mechanical', 2018),
+('110-003', 'Mary', 'Green', 'Electrical', 2018),
+('110-004', 'Dennis', 'Green', 'Electrical', 2020),
+('110-005', 'Joseph', 'Black', 'Computer Science', 2020),
+('110-006', 'Dennis', 'Black', 'Computer Science', 2020),
+('110-007', 'Ritchie', 'Salt', 'Mechanical', 2020),
+('110-008', 'Robert', 'Salt', 'Computer Science', 2020),
+('110-009', 'David', 'Suzuki', 'Electrical', 2017),
+('110-010', 'Mary', 'Chen', 'Computer Science', 2018);
+
+
+to verify: SELECT * FROM students;

@@ -1,0 +1,31 @@
+Part 9: Cronjob
+Create a cronjob that will run at 1:30 AM every day and collect the users logged in and save them in a file
+Format : timestamp – users
+Note: the cronjob can run a script.
+
+# 30 1 * * * CMD
+
+# 30 min
+# 1 hour a am 
+# * every day
+# * every month
+# * every day of the weak
+# CMD command to be executed
+
+#timestamp: {%Y%m%d-%H:%M:%S}]\$
+
+30 1 * * * /usr/bin/w | awk '{print strftime("%Y-%m-%d %H:%M:%S"), $1}'  > /root/temp.log
+
+30 1 * * * last | awk '{print strftime("%Y-%m-%d %H:%M:%S"), $1}'  > /root/temp.log
+
+
+#The last command searches back through the file /var/log/wtmp (or the file designated by the -f flag)
+# and displays a list of all users logged in (and out) since that file was created. 
+
+
+#30 1 * * * /usr/bin/w | awk '{print strftime("%Y-%m-%d %H:%M:%S"), $1}' | grep -v 'USER' > /root/Linux_Task_1/logged_in_users.log
+
+# /usr/bin/w : shows who is logged on and what they are doing.
+
+# awk '{print strftime("%Y-%m-%d %H:%M:%S"), $1}'
+# :  formats the output to a timestamp and the user name.
