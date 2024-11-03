@@ -78,10 +78,144 @@ Connecting to sql
 >>create database MyData
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 3- Create a local yum repository on your local machine(available publicly) with the zabbix rpms:
 https://repo.zabbix.com/zabbix/4.4/rhel/7/x86_64/
 
-step 3
+the solution is at the end of this section
+
+
+
+
+/////////////////////////////////////////
+icase of DVD
+//////////////////////////////
+/////////////////////////////
+
+
+df -h // to display the disk space availabe on filesystem
+
+ the directory /run/media abd list it we want to mount
+then in the root create a directory  
+
+now copy the rum/media/.. to the new directory we created 
+
+cp -r /run/media ../* /repodir
+
+// to install with wifi disabled we need to copy all RPMs to our system
+
+cd /ets/yum.repos.d/
+ls and remove the config file
+
+//create a file
+
+vi local.repo
+
+
+///////////////////
+/*[LocalAppStreamRepo]
+name=AppStream Repository in DVD of CentOS
+gpgcheck=1
+enabled=1
+baseurl=file:///media/cdrom/AppStream*/
+///////////////////
+
+[redhat9]
+name=localrepo
+baseurl=file:///repo/AppStream
+gpgcheck=0
+enabled=1
+"wq!
+///
+
+root directory
+
+//to clear the cashe
+yum clean all
+
+//list repo
+yum repolist
+
+//try to install 
+yum install httpd
+
+
+
+//////////////////////////
+/////////////////////////
+
+To create local repo via web httpd apache 
+/////////////////////////
+/////////////////////
+
+
+Step 1: Configure Network Access
+
+yum install httpd
+
+Step 2: Create Yum Local Repository
+
+yum install createrepo
+
+yum install yum-utils
+
+Step 3: Create a Directory to Store the Repositories
+
+mkdir –p /var/www/html/repos/{base,centosplus,extras,updates}
+
+Step 4: Synchronize HTTP Repositories
+
+reposync -g -l -d -m --repoid=base --newest-only --download-metadata --download_path=/var/www/html/repos/
+
+reposync -g -l -d -m --repoid=centosplus --newest-only --download-metadata --download_path=/var/www/html/repos/
+
+reposync -g -l -d -m --repoid=extras --newest-only --download-metadata --download_path=/var/www/html/repos/
+
+reposync -g -l -d -m --repoid=updates --newest-only --download-metadata --download_path=/var/www/html/repos/
+
+Step 5: Create the New Repository
+
+createrepo /var/www/html
+
+Step 6: Setup Local Yum Repository on Client System
+
+mv /etc/yum.repos.d/*.repo /tmp/
+
+Create and edit a new config file:
+
+nano /etc/yum.repos.d/remote.repo
+
+ In the new file, enter the command (replacing the IP address with the IP address of your server):
+
+[remote]
+name=RHEL Apache
+baseurl=http://IP Address
+enabled=1
+gpgcheck=0
+
+Finally, save the file and exit.
+
+Test the Configuration
+
+While still on the client system, run a command to install a package with the yum package manager:
+
+yum install httpd
+
+
+
+//////////////////////////////////////////
+/
 mkdir -p ~/zabbix_repo
 cd ~/zabbix_repo
 
@@ -103,57 +237,84 @@ gpgcheck=0
 
 to make sure > yum repolist
 
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+..............................................................THE SOLUTION
+
+
+////////////////////////////////////////////
+/////////////////////////////////////////
+https://repo.zabbix.com/zabbix/5.0/rhel/9/x86_64/
+//////////////////////////////////////////
+
+first clean server from zabbix 
+yum remove zabbix-server zabbix-agent zabbix-web-mysql php
+yum remove pcp-export-pcp2zabbix pcp-export-zabbix-agent zabbix-release //remove zabbix packages
+
+
+yum clean all
+rm -rf /etc/zabbix
+rm -rf /usr/share/zabbix
+
+yum list installed | grep zabbix // to make sure every thing is removed
+
+
+downloaded all the zabbix rpms and localinstall it
+
+ nano /etc/yum.repos.d/local-repo.repo
+
+""
+[local-repo]
+name=Local Repository
+baseurl=/root/zabbix/repo
+enabled=1
+gpgcheck=0
+""
+ 
+yum repolist 
+mkdir -p /root/zabbix_repo/repodata
+chmod -R 755 /root/zabbix_repo/repodata
+createrepo /root/zabbix_repo/repodata
+yum clear all
+yum makecache
+
+
+
+
 4- Disable all other repositories and keep only the new repo
 
 yum-config-manager --disable repo_id
 
+
+or yum-confiipg-manager --disable all
+	yum-config-manager --enable localrepo
+
+
+
+
+
+
+
 5- Install zabbix rpms from the new repo (Download zabbix, zabbix-web,php, zabbix-server,
 zabbix-agent rpm’s and their dependencies)
 
-cd /var/www/html/zabbix-rpms
-sudo yum install  zabbix-agent
-sudo systemctl enable zabbix-agent
-sudo systemctl start zabbix-agent
-systemctl status zabbix-agent
+from https://repo.zabbix.com/zabbix/7.0/rhel/9/x86_64/
 
-sudo yum install zabbix-server-mysql zabbix-web-mysql zabbix-agent php
-sudo systemctl status zabbix-server zabbix-agent httpd php-fpm
-sudo systemctl start zabbix-server zabbix-agent httpd php-fpm
-sudo systemctl enable zabbix-server zabbix-agent httpd php-fpm
- http://your_server_ip/zabbix
+wget zabbix-agent zabbix-web zabbix-server
+yum localinstall 
+zabbix-server-mysql 
+zabbix-web-mysql 
+zabbix-agent
 
+sudo systemctl start zabbix-server zabbix-agent
+sudo systemctl enable zabbix-server zabbix-agent
 
-
-
-yum install -y 
-#zabbix-server-mysql 
-#zabbix-web-mysql 
-zabbix-agent 
-php 
-php-mysqlnd
-
-//configure Zabbix server
-nano /etc/zabbix/zabbix_server.conf
-
-//create Zabbix database
-mysql -u root -p
->>
-CREATE DATABASE zabbix character set utf8 collate utf8_bin;
-CREATE USER 'zabbix'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON zabbix.* TO 'zabbix'@'localhost';
-FLUSH PRIVILEGES;
-EXIT;
-
-//Initialize the Database:
-zcat /usr/share/doc/zabbix-server-mysql*/create.sql.gz | mysql -uzabbix -p Zabbix
-
-//Start Zabbix services
-systemctl start zabbix-server zabbix-agent httpd
-systemctl enable zabbix-server zabbix-agent httpd
 
 Configure Firewall:
 sudo firewall-cmd --permanent --add-service=http
 sudo firewall-cmd --permanent --add-port=10051/tcp
 sudo firewall-cmd --reload
 
-//accessing :http://your_server_ip/zabbix
+//accessing :http://server_ip/zabbix
