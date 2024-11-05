@@ -29,3 +29,7 @@ Note: the cronjob can run a script.
 
 # awk '{print strftime("%Y-%m-%d %H:%M:%S"), $1}'
 # :  formats the output to a timestamp and the user name.
+
+#awk used for text processing and data extraction in Unix/Linux environments. 
+#It allows users to write small programs that can search 
+#for patterns in text files and perform actions on the matched lines.

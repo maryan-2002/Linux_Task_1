@@ -1,3 +1,6 @@
+#private key not used
+
+
 Part 3: SSH
 Generate SSH key and connect to different VM without password.
 
@@ -49,3 +52,10 @@ now everything is set
 we can login via ssh without entrting a password
 
 #ssh username@IPaddress
+
+//////
+
+SSH using private key 
+
+#ssh username@IPaddress
+

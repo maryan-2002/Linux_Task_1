@@ -21,22 +21,38 @@ if does not kill it will print
 ...
 
 #! /usr/bin/bash
-echo "Hello World"
-echo "waiting 10 min"
 
-pid=$?
-sleep 600
-echo $pid
-kill $pid
-wait $pid
-echo "process not killed"
+echo "Sending server to sleep...."
+#simulate the remote service call...
+sleep 120
+echo "server is awake!"
 
 ...
 
-# ./part6_task1.sh
->> output
-Hello World
-waiting 10 min
-0
+in session1:
+
+./part6_task1.sh
+
+>Sending server to sleep....
+
+...
+
+in sessin 2:
+
+ps -aux // ps -ef 
+
+# a list of processes will be displayed 
+#chosing the one with the sleep command name and kill it
+
+root        6934  0.0  0.0 220952  1792 pts/0    S+   09:13   0:00 sleep 120
+root        6937  0.0  0.2 234904  6528 pts/1    R+   09:13   0:00 ps -aux
+[root@localhost ~]# kill 6934
+ 
+...
+
+back to session 1:
+
+Sending server to sleep....
 Terminated
+server is awake!
 

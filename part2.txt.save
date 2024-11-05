@@ -36,23 +36,15 @@ group Password: redhat, user 3 with root permissions
 #id user2 
 
 after creating a new group with admin name getent used to get the group id number 
-the a new user was created and -g option was used to configure group id with the number that was found from gatent
+the a new user was created and
+ -g option was used to configure group id with the number that was found from gatent
 then passwd command was used to set password 
 
 #useradd -ou 0 -g 0 -G 30004 user3
 #passwd user3
 >redhat
 
-a new user was created -o option to allow crete duplicate and setted the -u (UID) and -g (GID) to 0 to give it root privilages then set the passwd
+a new user was created 
+-o (non unique) option to allow crete duplicate and setted 
+the -u (UID) and -g (GID) to 0 to give it root privilages then set the passwd
 
->>
-
-cat /etc/group | grep TrainingGroup admin
-
-TrainingGroup:x:30003:user1
-admin:x:30004:user2,user3
-
->>
-
-[root@localhost ~]# id user3
-uid=0(root) gid=0(root) groups=0(root)
